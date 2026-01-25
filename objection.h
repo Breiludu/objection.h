@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 // Colors for printing in terminal
 #define __COLOR_RED     "\x1b[31m"
@@ -42,6 +43,11 @@ static uint16_t __total_failed   = 0;
 static char **__curr_trial_name;
 // True if last executed trial has failed
 static int __has_failed;
+// Names of falied Trials for summary
+static char __failed_trials[8][32] = {0};
+static uint8_t __failed_trials_len = 0;
+#define __FAILED_TRIALS_NAME_MAX_LEN 28
+#define __FAILED_TRIALS_MAX_LEN 7
 
 // --- Exposed macros for user api ---
 
@@ -80,15 +86,31 @@ static inline void __print_info_prefix() {
     printf(__STYLE_BOLD "[" __COLOR_YELLOW "INFO" __COLOR_RESET "] " __STYLE_NO_BOLD);
 }
 
-static inline void __handle_objection_failure(const char *statement_str, const char *file_name, const int line) {
+static void __handle_objection_failure(const char *statement_str, const char *file_name, const int line) {
     __total_failed++;
-    __has_failed = 1;
     __print_fail_prefix();
     printf("    OBJECTION(%s)\n", statement_str);
     __print_info_prefix();
     printf("      In trial " __STYLE_BOLD "%s"
         __STYLE_NO_BOLD "-> (%s, %d)\n",
         *__curr_trial_name, file_name, line);
+
+    if(__has_failed == 0) {
+        __has_failed = 1;
+        // Append Trial name for info display
+        if(__failed_trials_len < __FAILED_TRIALS_MAX_LEN) {
+            strncpy(__failed_trials[__failed_trials_len], *__curr_trial_name, __FAILED_TRIALS_NAME_MAX_LEN);
+            // In case name is too large
+            if(strlen(*__curr_trial_name) > __FAILED_TRIALS_NAME_MAX_LEN) {
+                strcat(__failed_trials[__failed_trials_len], "...");
+            }
+            __failed_trials_len++;
+        // In case of reached limit
+        } else if(__failed_trials_len == __FAILED_TRIALS_MAX_LEN) {
+            strcpy(__failed_trials[__failed_trials_len], "and more");
+            __failed_trials_len++;
+        }
+    }
 }
 
 // Main function that calls all TRIALs
@@ -109,6 +131,19 @@ int main(void) {
         __curr_trial_name++;
         __has_failed = 0;
     }
+    // Print failed trials summary
+    __print_info_prefix();
+    printf("Failed trials: " __STYLE_BOLD);
+    for(uint8_t i = 0; i < __failed_trials_len; i++) {
+        printf("%s", __failed_trials[i]);
+        if(i < __failed_trials_len-1) {
+            printf(__STYLE_NO_BOLD  ", " __STYLE_BOLD);
+        } else {
+            printf(__STYLE_NO_BOLD ".\n");
+        }
+    }
+
+    printf("[----]\n");
     printf("[====] " __STYLE_BOLD "Objections: %u | Failed: %u\n" __STYLE_NO_BOLD, __total_objected, __total_failed);
     return 0;
 }
