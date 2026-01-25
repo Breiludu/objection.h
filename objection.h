@@ -1,45 +1,69 @@
-/* objection.h - v1.0 - (c) Breixo Luna Durán */
+/* objection.h - main branch - (c) Breixo Luna Durán */
 
 #include <stdio.h>
 #include <stdint.h>
 
-// Sentence > Trial > Objection
-static uint16_t _total_objected = 0;
-static uint16_t _total_failed   = 0;
+typedef void(*TrialFn)(void);
 
-static uint16_t _trial_objected = 0;
-static uint16_t _trial_failed   = 0;
+// .trials data section pointers
+extern TrialFn __start_trials[];
+extern TrialFn __stop_trials[];
+
+// .trial_names data section pointers
+extern char *__start_trial_names[];
+extern char *__stop_trial_names[];
+
+// Count objections made and failed
+static uint16_t __total_objected = 0;
+static uint16_t __total_failed   = 0;
+
+// Name of the trial currently executing
+static char **__curr_trial_name;
+// True if last executed trial has failed
+static int __has_failed;
 
 /// Pass in a statement that should evaluate to true.
-#define OBJECTION(statement) do { \
-    _total_objected++; \
-    _trial_objected++; \
-    if(!(statement)) { \
-        _total_failed++; \
-        _trial_failed++; \
-        printf("\t**FAILED: %s\n", #statement); \
-    } \
+#define OBJECTION(statement) do {                               \
+    __total_objected++;                                         \
+    if(!(statement)) {                                          \
+        __total_failed++;                                       \
+        __has_failed = 1;                                       \
+        printf("[FAIL]     OBJECTION(%s)\n", #statement);       \
+        printf("[INFO]       In trial %s -> (%s, %d)\n",        \
+            *__curr_trial_name, __FILE__, __LINE__);            \
+    }                                                           \
 } while(0)
 
-/// Pass in a function with OBJECTIONs inside
-#define TRIAL(func) do { \
-    _trial_objected = 0; \
-    _trial_failed   = 0; \
-    printf("TRIAL %s:\n", #func); \
-    func(); \
-    printf("\tobjections: %u\n", _trial_objected); \
-    printf("\tfailed: %u\n\n", _trial_failed); \
-} while(0)
+/// Declares and defines a new TRIAL function
+#define TRIAL(name)                                            \
+    static void __trial_##name(void);                          \
+                                                               \
+    static char *__trial_name_##name                           \
+    __attribute__((used, section("trial_names"))) = #name;     \
+                                                               \
+    static TrialFn __trial_ptr_##name                          \
+    __attribute__((used, section("trials"))) = __trial_##name; \
+                                                               \
+    static void __trial_##name(void)
 
-/// Pass in a function with TRIALs inside
-#define SENTENCE(func) do { \
-    _total_objected = 0; \
-    _total_failed   = 0; \
-    printf(">>> SENTENCE of %s <<<\n\n", #func); \
-    func(); \
-    printf("total objections: %u\n", _total_objected); \
-    printf("total failed: %u\n\n", _total_failed); \
-    printf(">>> END of %s <<<\n\n", #func); \
-} while(0)
+// Main function that calls all TRIALs
+int main(void) {
+    printf("[====] objection.h unit testing\n");
+    printf("[----]\n");
 
-/* What? Expected something better? My apologies. No, I mean it. */
+    __curr_trial_name = __start_trial_names;
+    __has_failed = 0;
+    for(TrialFn *trial = __start_trials; trial < __stop_trials; trial++) {
+        (*trial)();
+
+        if(!__has_failed) {
+            printf("[PASS] Trial %s passed\n", *__curr_trial_name);
+        }
+        printf("[----]\n");
+        __curr_trial_name++;
+        __has_failed = 0;
+    }
+    printf("[----]\n");
+    printf("[====] Objections: %u | Failed: %u\n", __total_objected, __total_failed);
+    return 0;
+}
