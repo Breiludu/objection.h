@@ -63,7 +63,6 @@ int main(void) {
         __curr_trial_name++;
         __has_failed = 0;
     }
-    printf("[----]\n");
     printf("[====] Objections: %u | Failed: %u\n", __total_objected, __total_failed);
     return 0;
 }
