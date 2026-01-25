@@ -1,7 +1,7 @@
 /*
  * objection.h
  *
- * Version: 2.1.0-alpha.1
+ * Version: 2.1.0
  *
  * Copyright 2026 (c) Breixo Luna Durán
  *
