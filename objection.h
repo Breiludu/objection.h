@@ -92,7 +92,7 @@ static void __handle_objection_failure(const char *statement_str, const char *fi
     printf("    OBJECTION(%s)\n", statement_str);
     __print_info_prefix();
     printf("      In trial " __STYLE_BOLD "%s"
-        __STYLE_NO_BOLD "-> (%s, %d)\n",
+        __STYLE_NO_BOLD " -> (%s, %d)\n",
         *__curr_trial_name, file_name, line);
 
     if(__has_failed == 0) {
