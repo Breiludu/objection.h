@@ -49,14 +49,8 @@ static int __has_failed;
 #define OBJECTION(statement) do {                               \
     __total_objected++;                                         \
     if(!(statement)) {                                          \
-        __total_failed++;                                       \
-        __has_failed = 1;                                       \
-        __print_fail_prefix();                                  \
-        printf("    OBJECTION(%s)\n", #statement);              \
-        __print_info_prefix();                                  \
-        printf("      In trial " __STYLE_BOLD "%s"              \
-            __STYLE_NO_BOLD "-> (%s, %d)\n",                    \
-            *__curr_trial_name, __FILE__, __LINE__);            \
+        __handle_objection_failure                              \
+            (#statement, __FILE__, __LINE__);                   \
     }                                                           \
 } while(0)
 
@@ -84,6 +78,17 @@ static inline void __print_pass_prefix() {
 
 static inline void __print_info_prefix() {
     printf(__STYLE_BOLD "[" __COLOR_YELLOW "INFO" __COLOR_RESET "] " __STYLE_NO_BOLD);
+}
+
+static inline void __handle_objection_failure(const char *statement_str, const char *file_name, const int line) {
+    __total_failed++;
+    __has_failed = 1;
+    __print_fail_prefix();
+    printf("    OBJECTION(%s)\n", statement_str);
+    __print_info_prefix();
+    printf("      In trial " __STYLE_BOLD "%s"
+        __STYLE_NO_BOLD "-> (%s, %d)\n",
+        *__curr_trial_name, file_name, line);
 }
 
 // Main function that calls all TRIALs
