@@ -1,4 +1,13 @@
-/* objection.h - main branch - (c) Breixo Luna Durán */
+/*
+ * objection.h
+ *
+ * Version: 2.0.0
+ *
+ * Copyright 2026 (c) Breixo Luna Durán
+ *
+ * Licensed under MIT License.
+ * See the LICENSE file for details.
+ * */
 
 #include <stdio.h>
 #include <stdint.h>
