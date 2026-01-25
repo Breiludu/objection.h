@@ -12,57 +12,58 @@ The **awful naming** (sorry) comes from the *Ace Attorney* games, where lawyers 
 
 ## Usage
 
-* All **trials** (tests) are written as independent funcions.
-* **Objections** (assertions) are made inside trials to check statements that should evaluate to true. When an objection fails, it is reported to stderr.
-* Trials can be gruped inside of another function from where they are called to **sentence** wheter a module tested worked or not.
+* **Trials** (tests) are independent funcions. Use the *TRIAL* macro to define a new one.
+* Trials are **automatically called** by the main function.
+* Do not define a main funciton inside the file containing the trials, as it is already defined in *objection.h*.
+* **Objections** (assertions) are made inside trials to check statements that should evaluate to true. When an objection fails, it is reported to stdout.
+* Once you have your *court* file ready, compile it as a single file and it will be ready to execute.
 
 ## Example
 
+`example.c`
+
 ```c
 #include "objection.h"
+#include <string.h>
 
-void try_example1(void) {
-    OBJECTION(1 == 0);      // Will fail and be reported to stderr
+TRIAL(example_one) {
+    int a = 1;
+    int b = 2;
+    OBJECTION(a == b);
 }
 
-void try_example2(void) {
-    OBJECTION(1 == 1);      // Will pass
-}
-
-void sentence_example(void) {
-    TRIAL(try_example1);    // Calls try_example1
-    TRIAL(try_example2);    // Calls try_example2
-}
-
-int main(void) {
-    SENTENCE(sentence_example); // Runs all trials in the sentence
-    return 0;
+TRIAL(example_two) {
+    char str1[] = "Objection!";
+    char str2[] = "Objection!";
+    OBJECTION(strcmp(str1, str2) == 0);
 }
 ```
 
-This code prints the following:
+Compile the file and execute:
+
+```shell
+gcc -o example example.c
+./example
+```
+
+This code produces the following output:
 
 ```
->>> SENTENCE of sentence_example <<<
-
-TRIAL try_example1:
-        **FAILED: 1 == 0
-        objections: 1
-        failed: 1
-
-TRIAL try_example2:
-        objections: 1
-        failed: 0
-
-total objections: 2
-total failed: 1
-
->>> END of sentence_example <<<
+[====] objection.h unit testing
+[----]
+[FAIL]     OBJECTION(a == b)
+[INFO]       In trial example_one -> (example.c, 7)
+[----]
+[PASS] Trial example_two passed
+[----]
+[====] Objections: 2 | Failed: 1
 ```
 
 ---
 
 **Work in progress**
+
+The api of this utility is not guaranteed to remain the same in future updates.
 
 Suggestions... I mean -- Objections are accepted.
 
