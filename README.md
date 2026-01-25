@@ -56,6 +56,8 @@ This code produces the following output:
 [----]
 [PASS] Trial example_two passed
 [----]
+[INFO] Failed trials: example_one.
+[----]
 [====] Objections: 2 | Failed: 1
 ```
 
