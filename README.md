@@ -52,7 +52,7 @@ This code produces the following output:
 [====] objection.h unit testing
 [----]
 [FAIL]     OBJECTION(a == b)
-[INFO]       In trial example_one-> (example.c, 7)
+[INFO]       In trial example_one -> (example.c, 7)
 [----]
 [PASS] Trial example_two passed
 [----]
