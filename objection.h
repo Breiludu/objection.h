@@ -132,18 +132,20 @@ int main(void) {
         __has_failed = 0;
     }
     // Print failed trials summary
-    __print_info_prefix();
-    printf("Failed trials: " __STYLE_BOLD);
-    for(uint8_t i = 0; i < __failed_trials_len; i++) {
-        printf("%s", __failed_trials[i]);
-        if(i < __failed_trials_len-1) {
-            printf(__STYLE_NO_BOLD  ", " __STYLE_BOLD);
-        } else {
-            printf(__STYLE_NO_BOLD ".\n");
+    if(__failed_trials_len > 0) {
+        __print_info_prefix();
+        printf("Failed trials: " __STYLE_BOLD);
+        for(uint8_t i = 0; i < __failed_trials_len; i++) {
+            printf("%s", __failed_trials[i]);
+            if(i < __failed_trials_len-1) {
+                printf(__STYLE_NO_BOLD  ", " __STYLE_BOLD);
+            } else {
+                printf(__STYLE_NO_BOLD ".\n");
+            }
         }
+        printf("[----]\n");
     }
 
-    printf("[----]\n");
     printf("[====] " __STYLE_BOLD "Objections: %u | Failed: %u\n" __STYLE_NO_BOLD, __total_objected, __total_failed);
     return 0;
 }
