@@ -1,7 +1,7 @@
 /*
  * objection.h
  *
- * Version: 2.1.1
+ * Version: 3.0.0-alpha
  *
  * Copyright 2026 (c) Breixo Luna Durán
  *
@@ -27,6 +27,9 @@
 
 typedef void(*TrialFn)(void);
 
+// Main function auto called from COURT macro
+int __main(char *court_name);
+
 // .trials data section pointers
 extern TrialFn __start_trials[];
 extern TrialFn __stop_trials[];
@@ -39,6 +42,8 @@ extern char *__stop_trial_names[];
 static uint16_t __total_objected = 0;
 static uint16_t __total_failed   = 0;
 
+// Name of the court (test file)
+static char *__court_name;
 // Name of the trial currently executing
 static char **__curr_trial_name;
 // True if last executed trial has failed
@@ -72,6 +77,16 @@ static uint8_t __failed_trials_len = 0;
                                                                \
     static void __trial_##name(void)
 
+/// Give name to the current court (test file). Defaults to __FILE__
+#define COURT(name) \
+    int main(void) { \
+        if(strcmp("", #name) == 0) { \
+            return __main(__FILE__); \
+        } else { \
+            return __main(#name); \
+        } \
+    }
+
 // --- Internal use functions ---
 
 static inline void __print_fail_prefix() {
@@ -86,6 +101,7 @@ static inline void __print_info_prefix() {
     printf(__STYLE_BOLD "[" __COLOR_YELLOW "INFO" __COLOR_RESET "] " __STYLE_NO_BOLD);
 }
 
+// Called if the evaluation of OBJECTION resulted in false
 static void __handle_objection_failure(const char *statement_str, const char *file_name, const int line) {
     __total_failed++;
     __print_fail_prefix();
@@ -114,8 +130,10 @@ static void __handle_objection_failure(const char *statement_str, const char *fi
 }
 
 // Main function that calls all TRIALs
-int main(void) {
-    printf("[====] objection.h unit testing\n");
+int __main(char *court_name) {
+    __court_name = court_name;
+    printf("[====] Unit testing with objection.h\n");
+    printf("[----] Court is: %s\n", __court_name);
     printf("[----]\n");
 
     __curr_trial_name = __start_trial_names;

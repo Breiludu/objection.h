@@ -1,5 +1,7 @@
 #include "../objection.h"
 
+COURT(example2);
+
 float mid_point(float a, float b) {
     return (a + b)/2.0f;
 }

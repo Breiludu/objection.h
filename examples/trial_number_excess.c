@@ -1,5 +1,7 @@
 #include "../objection.h"
 
+COURT(trial_number_excess);
+
 TRIAL(trial1) { OBJECTION(1 == 0); }
 
 TRIAL(trial2) { OBJECTION(1 == 0); }

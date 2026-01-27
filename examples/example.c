@@ -1,6 +1,8 @@
 #include "../objection.h"
 #include <string.h>
 
+COURT(example);
+
 TRIAL(example_one) {
     int a = 1;
     int b = 2;
