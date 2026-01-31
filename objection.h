@@ -28,7 +28,7 @@
 typedef void(*TrialFn)(void);
 
 // Main function auto called from COURT macro
-int __main(char *court_name);
+static int __main(char *court_name);
 
 // .trials data section pointers
 extern TrialFn __start_trials[];
@@ -130,7 +130,7 @@ static void __handle_objection_failure(const char *statement_str, const char *fi
 }
 
 // Main function that calls all TRIALs
-int __main(char *court_name) {
+static int __main(char *court_name) {
     __court_name = court_name;
     printf("[====] Unit testing with objection.h\n");
     printf("[----] Court is: %s\n", __court_name);
