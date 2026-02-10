@@ -49,10 +49,13 @@ static char **__curr_trial_name;
 // True if last executed trial has failed
 static int __has_failed;
 // Names of falied Trials for summary
-static char __failed_trials[8][32] = {0};
+#define __FAILED_TRIALS_NAME_MAX_LEN 32
+#define __FAILED_TRIALS_MAX_LEN 8
+static char __failed_trials
+    [__FAILED_TRIALS_MAX_LEN+1]         // +1 because last element would be "and more"
+    [__FAILED_TRIALS_NAME_MAX_LEN+4]    // +4 because of '\0' and "..." in case of name is too large
+    = {0};
 static uint8_t __failed_trials_len = 0;
-#define __FAILED_TRIALS_NAME_MAX_LEN 28
-#define __FAILED_TRIALS_MAX_LEN 7
 
 // --- Exposed macros for user api ---
 
