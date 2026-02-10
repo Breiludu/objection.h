@@ -16,7 +16,8 @@ The **awful naming** (sorry) comes from the *Ace Attorney* games, where lawyers 
 * Trials are **automatically called** by the main function.
 * Do not define a main funciton inside the file containing the trials, as it is already defined in *objection.h*.
 * **Objections** (assertions) are made inside trials to check statements that should evaluate to true. When an objection fails, it is reported to stdout.
-* Once you have your *court* file ready, compile it as a single file and it will be ready to execute.
+* *COURT* macro is needed for naming the **court** (test file). If no name is passed in, the name is defaulted to \_\_FILE\_\_.
+* Once you have your *court* file ready, compile and it will be ready to execute.
 
 ## Example
 
@@ -25,6 +26,8 @@ The **awful naming** (sorry) comes from the *Ace Attorney* games, where lawyers 
 ```c
 #include "objection.h"
 #include <string.h>
+
+COURT(example);
 
 TRIAL(example_one) {
     int a = 1;
@@ -41,15 +44,16 @@ TRIAL(example_two) {
 
 Compile the file and execute:
 
-```shell
-gcc -o example example.c
-./example
+```console
+$ gcc -o example example.c
+$ ./example
 ```
 
 This code produces the following output:
 
 ```
-[====] objection.h unit testing
+[====] Unit testing with objection.h
+[----] Court is: example
 [----]
 [FAIL]     OBJECTION(a == b)
 [INFO]       In trial example_one -> (example.c, 7)
